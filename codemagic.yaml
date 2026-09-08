@@ -9,6 +9,7 @@ workflows:
       - name: Build APK
         script: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleRelease -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
