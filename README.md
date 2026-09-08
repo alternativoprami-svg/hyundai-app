@@ -29,6 +29,54 @@ hyundai_app/
     └── manuals/                # PDFs de manuales de usuario
 ```
 
+## Carpeta `android/`
+
+Se agregó la carpeta `android/` completa, necesaria para que `flutter build apk` (y Codemagic) puedan compilar:
+
+```
+android/
+├── build.gradle                 # Config a nivel proyecto
+├── settings.gradle               # Declara módulos e incluye el plugin de Flutter
+├── gradle.properties
+├── gradlew / gradlew.bat         # Scripts del wrapper de Gradle
+├── gradle/wrapper/gradle-wrapper.properties
+├── .gitignore
+└── app/
+    ├── build.gradle               # applicationId, minSdk/targetSdk, firma de release
+    └── src/
+        ├── main/
+        │   ├── AndroidManifest.xml
+        │   ├── kotlin/com/hyundaiowner/app/MainActivity.kt
+        │   └── res/                # íconos placeholder, splash screen, temas
+        ├── debug/AndroidManifest.xml
+        └── profile/AndroidManifest.xml
+```
+
+`applicationId` / `namespace`: `com.hyundaiowner.app` (cámbialo antes de publicar si quieres otro id).
+
+### ⚠️ Paso obligatorio antes de subir a GitHub: `gradle-wrapper.jar`
+
+Por seguridad no puedo generar el archivo binario `android/gradle/wrapper/gradle-wrapper.jar` (el `.jar` que ejecuta `gradlew`). Sin él, `./gradlew` no va a arrancar y Codemagic fallará igual. Genéralo una sola vez, localmente, con el Flutter SDK instalado:
+
+```bash
+cd hyundai_app
+flutter build apk --debug
+```
+
+Al correr `flutter build apk` (o `flutter pub get` seguido de `cd android && gradle wrapper`), Flutter/Gradle descargan y crean automáticamente ese `.jar`. Después solo tienes que:
+
+```bash
+git add android/gradle/wrapper/gradle-wrapper.jar
+git commit -m "Agregar gradle-wrapper.jar"
+git push
+```
+
+Con eso el build de Codemagic debería funcionar. Si prefieres evitarte este paso manual, la alternativa más simple es correr `flutter create .` en la raíz del proyecto (con el Flutter SDK instalado) — eso regenera automáticamente toda la carpeta `android/` (incluido el `.jar`) de forma garantizada correcta, y puedes conservar tus carpetas `lib/` y `assets/` tal cual están.
+
+### Íconos
+
+Los íconos en `android/app/src/main/res/mipmap-*/ic_launcher.png` son un placeholder (círculo azul Hyundai con una "H"). Reemplázalos por tu logo real cuando lo tengas, o usa el paquete `flutter_launcher_icons` para generarlos automáticamente desde una sola imagen.
+
 ## Cómo correrlo
 
 ```bash
