@@ -1,12 +1,14 @@
 workflows:
   android-workflow:
     name: Build Android APK
-    instance_type: mac_mini_m2
     max_build_duration: 30
+    instance_type: mac_mini_m2
     scripts:
       - name: Get Flutter packages
-        script: flutter pub get
+        script: flutter packages pub get
       - name: Build APK
-        script: flutter build apk --release
+        script: |
+          cd android
+          ./gradlew assembleRelease -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
